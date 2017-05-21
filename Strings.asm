@@ -28,11 +28,17 @@ DATASEG
 
 
 ;Debug strings:
-	OpenErrorMsg			db 'File Open Error', 10,'$'
-	CloseErrorMsg			db 'File Close Error', 10,'$'
+	OpenErrorMsg			db	'File Open Error', 10,'$'
+	FileNotFoundMsg			db	'File not found$' ;error code 2
+	TooManyOpenFilesMsg		db	'Too many open files$' ;error code 4
+	AccessDeniedMsg			db	'Access Denied$' ;error code 5
+	InvalidAccessMsg		db	'Invalid Access$' ;error code 12
+	UnknownErrorMsg			db	'Unknown Error$'
 
-	PointerSetErrorMsg		db 'Pointer Set Error', 10, '$'
-	ReadErrorMsg			db 'Read Error', 10, '$'
+	CloseErrorMsg			db	'File Close Error', 10,'$'
+
+	PointerSetErrorMsg		db	'Pointer Set Error', 10, '$'
+	ReadErrorMsg			db	'Read Error', 10, '$'
 
 
 	PlayersInTableString	db	' Players in table$'

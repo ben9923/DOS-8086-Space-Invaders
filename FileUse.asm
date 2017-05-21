@@ -32,8 +32,62 @@ proc OpenFile
 @@printError:
 	cmp [byte ptr DebugBool], 0 ;skip print if debug disabled
 	je @@zeroAX
+
+	push ax ;save error code
+
+	;set cursor to top left:
+	mov ah, 2
+	xor bh, bh
+	xor dx, dx
+	int 10h
+	
 	;Print error message if got an error opening the file:
 	mov dx, offset OpenErrorMsg
+	mov ah, 9
+	int 21h
+
+	pop ax ;get error code
+
+	;print appropriate error message:
+	cmp ax, 2
+	je @@printNotFound
+
+	cmp ax, 4
+	je @@printTooManyFiles
+
+	cmp ax, 5
+	je @@printAccessDenied
+
+	cmp ax, 12
+	je @@printInvalidAccess
+
+
+	;print unknown error:
+	mov dx, offset UnknownErrorMsg
+	mov ah, 9
+	int 21h
+	jmp @@zeroAX
+
+@@printNotFound:
+	mov dx, offset FileNotFoundMsg
+	mov ah, 9
+	int 21h
+	jmp @@zeroAX
+
+@@printTooManyFiles:
+	mov dx, offset TooManyOpenFilesMsg
+	mov ah, 9
+	int 21h
+	jmp @@zeroAX
+
+@@printAccessDenied:
+	mov dx, offset AccessDeniedMsg
+	mov ah, 9
+	int 21h
+	jmp @@zeroAX
+
+@@printInvalidAccess:
+	mov dx, offset InvalidAccessMsg
 	mov ah, 9
 	int 21h
 

@@ -309,6 +309,15 @@ proc PrintInstructions
 	push offset InstructionsFileHandle
 	call OpenFile
 
+	cmp ax, 0 ;check if there's an error opening file
+	jne @@printImage
+
+	push 18 ;wait 1 second
+	call Delay
+
+	ret
+
+@@printImage:
 	push [InstructionsFileHandle]
 	push offset FileReadBuffer
 	call PrintFullScreenBMP
@@ -335,11 +344,15 @@ proc PrintHighScoreTable
 	;first byte - amount of players in table
 	;then 8 bytes of name, and a byte of score  x5 times
 
+	call ClearScreen
 
 	;Print background:
 	push offset ScoreTableFileName
 	push offset ScoreTableFileHandle
 	call OpenFile
+
+	cmp ax, 0 ;check if there's an error opening file
+	je @@skipBackgroundPrint
 
 	push [ScoreTableFileHandle]
 	push offset FileReadBuffer
@@ -349,7 +362,7 @@ proc PrintHighScoreTable
 	call CloseFile
 
 
-
+@@skipBackgroundPrint:
 	;try to open file, if missing create a new one:
 	push offset ScoresFileName
 	push offset ScoresFileHandle
