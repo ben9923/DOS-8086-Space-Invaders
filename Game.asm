@@ -551,7 +551,7 @@ proc PlayGame
 	jne @@checkRight
 
 	cmp [word ptr ShooterRowLocation], 21
-	jb_Far @@doStuff
+	jb_Far @@clearShot
 
 	;Clear current shooter print:
 	push ShooterLength
@@ -569,7 +569,7 @@ proc PlayGame
 	jne @@readKey
 
 	cmp [word ptr ShooterRowLocation], 290
-	ja_Far @@doStuff
+	ja_Far @@clearShot
 
 	;Clear current shooter print:
 	push ShooterLength
@@ -595,7 +595,7 @@ proc PlayGame
 	cmp [byte ptr PlayerShootingExists], 0
 	jne @@moveShootingUp
 
-	jmp @@doStuff
+	jmp @@clearShot
 
 @@shootPressed:
 	;Check if shooting already exists in screen:
@@ -628,14 +628,14 @@ proc PlayGame
 	push RedColor
 	call PrintColor
 
-	jmp @@doStuff
+	jmp @@clearShot
 
 @@removeShot:
 	mov [byte ptr PlayerShootingExists], 0
 	mov [word ptr PlayerShootingLineLocation], 0
 	mov [word ptr PlayerShootingRowLocation], 0
 
-@@doStuff:
+@@clearShot:
 	push 2
 	call Delay
 
