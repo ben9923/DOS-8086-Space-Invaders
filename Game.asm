@@ -5,8 +5,8 @@ include "Strings.asm"
 
 	;Files:
 
-	RandomFileName		db	'Assets/Random.txt', 0
-	RandomFileHandle	dw	?
+	RandomFileName					db	'Assets/Random.txt', 0
+	RandomFileHandle				dw	?
 
 	ScoresFileName					db	'Assets/Scores.txt', 0
 	ScoresFileHandle				dw	?
@@ -531,15 +531,7 @@ proc PlayGame
 
 	jz_Far @@checkShotStatus
 
-	;Read key, clean buffer afterwards:
-	mov ah, 0
-	int 16h
-
-	push ax
-	xor al, al
-	mov ah, 0ch
-	int 21h
-	pop ax
+	;Check which key was pressed:
 
 	cmp ah, 1 ;Esc
 	je_Far @@procEnd
