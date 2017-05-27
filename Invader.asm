@@ -432,3 +432,197 @@ proc ClearInvadersShots
 	
 	ret
 endp ClearInvadersShots
+
+
+proc CheckAndKillInvader
+	;Check if invader killed:
+	;Check above:
+	mov ah, 0Dh
+	mov dx, [PlayerShootingLineLocation]
+	dec dx
+	mov cx, [PlayerShootingRowLocation]
+	mov bh, 0
+	int 10h
+
+	cmp al, GreenColor
+	je @@killInvader
+
+	;Check below:
+	mov ah, 0Dh
+	mov dx, [PlayerShootingLineLocation]
+	add dx, 4
+	mov cx, [PlayerShootingRowLocation]
+	mov bh, 0
+	int 10h
+
+	cmp al, GreenColor
+	je @@killInvader
+
+	mov ah, 0Dh
+	mov dx, [PlayerShootingLineLocation]
+	sub dx, 3
+	mov cx, [PlayerShootingRowLocation]
+	mov bh, 0
+	int 10h
+
+	cmp al, GreenColor
+	je @@killInvader
+
+	;Check from left
+	mov ah, 0Dh
+	mov dx, [PlayerShootingLineLocation]
+	mov cx, [PlayerShootingRowLocation]
+	dec cx
+	mov bh, 0
+	int 10h
+
+	cmp al, GreenColor
+	je @@killInvader
+
+	;Check from right
+	mov ah, 0Dh
+	mov dx, [PlayerShootingLineLocation]
+	mov cx, [PlayerShootingRowLocation]
+	add cx, 2
+	mov bh, 0
+	int 10h
+
+	cmp al, GreenColor
+	je @@killInvader
+
+	jmp @@procEnd
+
+
+@@killInvader:
+	;set cursor to top left
+	xor bh, bh
+	xor dx, dx
+	mov ah, 2
+	int 10h
+
+	mov ax, [PlayerShootingLineLocation]
+	sub ax, [InvadersPrintStartLine]
+
+	cmp ax, 22
+	jb @@killedInLine0
+
+	cmp ax, 0FFE0h
+	ja @@killedInLine0
+
+	cmp ax, 42
+	jb @@killedInLine1
+
+	push 2
+	jmp @@checkKilledRow
+
+@@killedInLine0:
+	push 0
+	jmp @@checkKilledRow
+
+@@killedInLine1:
+	push 1
+
+@@checkKilledRow:
+	cmp [byte ptr DebugBool], 1
+	jne @@skipLineDebugPrint
+
+; Print hit debug info (if used debug flag):
+	mov ah, 2
+	xor bh, bh
+	xor dx, dx
+	int 10h
+
+	mov dl, 'L'
+	int 21h
+
+	pop dx
+	push dx
+	add dl, 30h
+	mov ah, 2
+	int 21h
+
+@@skipLineDebugPrint:
+	mov ax, [PlayerShootingRowLocation]
+	sub ax, [InvadersPrintStartRow]
+	add ax, 2
+
+	;In some rare cases startRow is bigger than shootingRow, check:
+	cmp ax, 0FFE0h
+	jb @@setForRowFind
+
+	xor cx, cx
+	jmp @@rowFound
+
+@@setForRowFind:
+	xor cx, cx ;row counter
+	mov dx, 28
+@@checkRow:
+	cmp ax, dx
+	jb @@rowFound
+
+	add dx, 36
+	inc cx
+	jmp @@checkRow
+
+@@rowFound:
+	cmp [byte ptr DebugBool], 1
+	jne @@skipRowDebugPrint
+
+	mov ah, 2
+	mov dl, 'R'
+	int 21h
+
+	mov dx, cx
+	add dl, 30h
+	int 21h
+
+@@skipRowDebugPrint:
+	pop bx
+	;bx holding line, cx holding row
+
+	shl bx, 3 ;multiply by 8
+	add bx, cx
+
+	push bx
+
+	mov [byte ptr InvadersStatusArray + bx], 0
+	dec [byte ptr InvadersLeftAmount]
+
+	mov [byte ptr PlayerShootingExists], 0
+	mov [word ptr PlayerShootingLineLocation], 0
+	mov [word ptr PlayerShootingRowLocation], 0
+
+	;Increase and update score:
+	inc [byte ptr Score]
+	call UpdateScoreStat
+
+	pop ax
+	;clear killed invader print
+	mov bl, 8
+	div bl
+	push ax
+	xor ah, ah
+	mov bl, 20
+	mul bl
+
+	mov dx, ax
+	add dx, [InvadersPrintStartLine]
+	sub dx, 4
+
+	pop ax
+	shr ax, 8
+	mov bl, 36
+	mul bl
+	add ax, [InvadersPrintStartRow]
+	sub ax, 4
+
+	push 36
+	push 24
+	push dx
+	push ax
+	push BlackColor
+	call PrintColor
+
+@@procEnd:
+	ret
+endp CheckAndKillInvader
