@@ -434,6 +434,11 @@ proc ClearInvadersShots
 endp ClearInvadersShots
 
 
+; ------------------------------------------------
+; Checks if an invader was hi by player's shot
+; If true, invader is marked as 'dead' and removed
+; Ben Raz
+; ------------------------------------------------
 proc CheckAndKillInvader
 	;Check if invader killed:
 	;Check above:
