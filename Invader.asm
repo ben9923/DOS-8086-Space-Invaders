@@ -1,5 +1,4 @@
 CODESEG
-include "Macros.asm"
 
 ; ---------------------------------------------------------
 ; Printing the invaders marked as alive in the status array
@@ -41,8 +40,8 @@ proc PrintInvaders
 	push [word ptr InvaderFileHandle]
 	push InvaderLength
 	push InvaderHeight
-	push [bp - 2]
-	push [bp - 4]
+	push [word ptr bp - 2]
+	push [word ptr bp - 4]
 	push offset FileReadBuffer
 	call PrintBMP
 
@@ -211,11 +210,11 @@ proc InvadersRandomShot
 	;Check if max reached:
 	mov al, [InvadersShootingCurrentAmount]
 	cmp [InvadersShootingMaxAmount], al
-	je_Far @@procEnd
+	je @@procEnd
 
 	;Shoot only after invaders movement:
 	cmp [byte ptr InvadersLoopMoveCounter], 3
-	jne_Far @@procEnd
+	jne @@procEnd
 
 
 	mov al, [InvadersShootingMaxAmount]

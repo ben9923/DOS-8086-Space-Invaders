@@ -88,7 +88,6 @@ include "Strings.asm"
 	WhiteColor						equ	255
 
 CODESEG
-include "Macros.asm"
 include "Invader.asm"
 include "Procs.asm"
 
@@ -529,7 +528,7 @@ proc PlayGame
 	mov ah, 1
 	int 16h
 
-	jz_Far @@checkShotStatus
+	jz @@checkShotStatus
 
 	;Clean buffer:
  	push ax
@@ -540,16 +539,16 @@ proc PlayGame
 	
 	;Check which key was pressed:
 	cmp ah, 1 ;Esc
-	je_Far @@procEnd
+	je @@procEnd
 
 	cmp ah, 39h ;Space
-	je_Far @@shootPressed
+	je @@shootPressed
 
 	cmp ah, 4Bh ;Left
 	jne @@checkRight
 
 	cmp [word ptr ShooterRowLocation], 21
-	jb_Far @@clearShot
+	jb @@clearShot
 
 	;Clear current shooter print:
 	push ShooterLength
@@ -567,7 +566,7 @@ proc PlayGame
 	jne @@readKey
 
 	cmp [word ptr ShooterRowLocation], 290
-	ja_Far @@clearShot
+	ja @@clearShot
 
 	;Clear current shooter print:
 	push ShooterLength
@@ -647,7 +646,7 @@ proc PlayGame
 	call PrintColor
 
 	cmp [byte ptr InvadersLeftAmount], 0
-	je_Far @@setNewLevel
+	je @@setNewLevel
 
 	;Check if invader killed:
 	call CheckAndKillInvader
@@ -669,7 +668,7 @@ proc PlayGame
 	;Check if player was killed:
 	call CheckIfPlayerDied
 	cmp ax, 0
-	je_Far @@readKey
+	je @@readKey
 
 @@playerDied:
 	;Player died:
@@ -679,7 +678,7 @@ proc PlayGame
 	;decrease amount of lives left, check if 0 left:
 	dec [byte ptr LivesRemaining]
 	cmp [byte ptr LivesRemaining], 0
-	je_Far @@printDied
+	je @@printDied
 
 	;Clear screan without stats area:
 	push 320

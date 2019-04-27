@@ -28,13 +28,13 @@ proc PrintMainMenu
 	je @@play
 
 	cmp ah, 17h ;I key
-	je_Far @@printInstructions
+	je @@printInstructions
 
 	cmp ah, 14h ;T key
-	je_Far @@printHighScoreTable
+	je @@printHighScoreTable
 
 	cmp ah, 1 ;Esc key
-	je_Far @@procEnd
+	je @@procEnd
 	jmp @@getKey
 
 @@play:
@@ -106,7 +106,7 @@ proc PrintMainMenu
 
 	mov al, [FileReadBuffer]
 	cmp al, [Score]
-	ja_Far @@printMenu ;if current score is lower than 5th place, don't ask
+	ja @@printMenu ;if current score is lower than 5th place, don't ask
 
 @@okToAsk:
 	push offset AskSaveFileName
@@ -125,7 +125,7 @@ proc PrintMainMenu
 	int 16h
 
 	cmp ah, 31h ;N key
-	je_Far @@printMenu
+	je @@printMenu
 
 	cmp ah, 15h ;Y key
 	jne @@askYN

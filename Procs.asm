@@ -1,4 +1,6 @@
 CODESEG
+include "Macros.asm"
+
 ; ---------------------------------------------------------------------------------------
 ; Filling the entire screen (graphic mode 320x200) with black (standard palette, index 0)
 ; Ben Raz
@@ -232,7 +234,7 @@ proc SortScoresFile
 	int 21h
 
 	cmp [byte ptr FileReadBuffer], 1
-	jbe_Far @@checkNoSortDebug ;if 0 or 1 score in table, no need to sort..
+	jbe @@checkNoSortDebug ;if 0 or 1 score in table, no need to sort..
 
 
 	xor ch, ch
@@ -272,7 +274,7 @@ proc SortScoresFile
 	mov al, [FileReadBuffer + 9] ;higher rank score
 	cmp al, [FileReadBuffer + 18] ;compare with lower rank score
 
-	jae_Far @@stopComparing
+	jae @@stopComparing
 
 
 ;replace both values:
